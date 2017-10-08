@@ -1,50 +1,36 @@
-#include "dialog.h"
+#include "mainwindow.h"
 #include <QApplication>
-#include <QLibrary>
-#include <QMessageBox>
-#include <QAxWidget>
-#include <QDebug>
-
-
-#include <QSettings>
-typedef long  (*pcom_open)(); //定义函数指针
+//需添加的头文件
+#include<QDir>
+#include<QProcess>
+#include<QAxWidget>  //需在Pro文件中添加QT += axcontainer
+void AutoRegCom();
 int main(int argc, char *argv[])
 {
-
-    //Q_OBJECT
     QApplication a(argc, argv);
-  //  Dialog w;
-    //使用RegDll注册大漠插件
-    QLibrary mylib("RegDll.dll");
-   // QLibrary mylib("ts.dll");
-    if(mylib.load())
-    {
-        qDebug() << "load ok!";
-        pcom_open open=(pcom_open)mylib.resolve("DllRegisterServer");
-        if(open)
-        {
-            open();
-            qDebug() << "load hello ok!";
-        }
-        else
-        {
-            qDebug() << "load hello fail!";
-        }
-    }
-   //Call Funcation
-    QAxWidget *flash = new QAxWidget(0,0);
-   // flash->resize(500,80);
-    //使用VC++6.0查看class_ID
-    //flash->setControl(QString::fromUtf8("{F3F54BC2-D6D1-4A85-B943-16287ECEA64C}"));
-    flash->setControl(QString::fromUtf8("{F3E95C10-606A-474E-BB4A-B9CCBF7DB559}"));
+    // MainWindow w;
+     AutoRegCom();
+     //创建activex对象指针
+     QAxWidget *fla=new QAxWidget();
+     //初始化大漠对象
+     fla->setControl(QString::fromUtf8("{26037A0E-7CBD-4FFF-9C63-56F2D0770214}"));
+     //通过dynamicCall调用大漠里面的函数，格式如下
+     fla->dynamicCall("MoveTo(int,int)",200,200);
 
-    flash->dynamicCall("MoveTo(int,int)",100,100);
-
-   // flash->show();
-
-
-  //  w.show();
-
-   // return a.exec();
+    // w.show();
+      fla->show();//qt串口显示
+      fla->dynamicCall("Beep(int,int)",100,5000);
+    return a.exec();
 }
+//自动注册大漠插件
+void AutoRegCom()
+{
+     QString path;
+     path=QCoreApplication::applicationDirPath();//获取程序运行路径
+     QString cmdStr="Regsvr32 "+path+"/dm.dll /s";
+     QProcess p(0);
+     p.start("cmd",QStringList()<<"/c"<<cmdStr);
+     p.waitForStarted();
+     p.waitForFinished();
 
+}
