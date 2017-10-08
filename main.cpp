@@ -1,4 +1,5 @@
-#include "mainwindow.h"
+//#include "mainwindow.h"
+#include "dialog.h"
 #include <QApplication>
 //需添加的头文件
 #include<QDir>
