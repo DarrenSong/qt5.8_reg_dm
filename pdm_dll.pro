@@ -18,4 +18,5 @@ SOURCES += main.cpp\
 HEADERS  += dialog.h
 #CONFIG += qaxcontainer
 
-
+#this is your own path!
+INCLUDEPATH +=D:/Qt5.8/5.8/msvc2013/include/ActiveQt
